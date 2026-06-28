@@ -1,0 +1,196 @@
+﻿@page
+@model Ecommerce.Web.Pages.Auth.RegisterModel
+@{
+    ViewData["Title"] = "Create Account";
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="auth-card card mx-auto" style="max-width:560px">
+        <div class="text-center mb-1">
+            <div class="auth-brand-icon">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h3 class="fw-bold mb-0">Create your account</h3>
+            <p class="text-muted small">Join thousands of happy shoppers</p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="d-flex justify-content-center gap-2 mb-4" id="progressDots">
+            <span class="badge bg-primary rounded-pill px-3">1. Details</span>
+            <span class="badge bg-light text-muted rounded-pill px-3">2. Security</span>
+        </div>
+
+        <form method="post" id="registerForm" novalidate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+            <!-- Step 1: Personal Details -->
+            <div id="step1">
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                        <label asp-for="Input.FirstName" class="form-label fw-semibold small"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
+                            <input asp-for="Input.FirstName" class="form-control" placeholder="John" />
+                        </div>
+                        <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label asp-for="Input.LastName" class="form-label fw-semibold small"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
+                            <input asp-for="Input.LastName" class="form-control" placeholder="Doe" />
+                        </div>
+                        <span asp-validation-for="Input.LastName" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Email" class="form-label fw-semibold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope text-muted"></i></span>
+                        <input asp-for="Input.Email" class="form-control" placeholder="you@example.com" />
+                    </div>
+                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Input.PhoneNumber" class="form-label fw-semibold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-phone text-muted"></i></span>
+                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="+91 98765 43210" />
+                    </div>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary" id="nextBtn" onclick="goToStep2()">
+                        Continue <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Password -->
+            <div id="step2" class="d-none">
+                <div class="mb-3">
+                    <label asp-for="Input.Password" class="form-label fw-semibold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
+                        <input asp-for="Input.Password" class="form-control" id="passwordInput" placeholder="••••••••" />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePwd('passwordInput','eyeIcon1')" tabindex="-1">
+                            <i class="bi bi-eye" id="eyeIcon1"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="text-danger small"></span>
+
+                    <!-- Strength Meter -->
+                    <div class="mt-2">
+                        <div class="progress" style="height:4px">
+                            <div class="progress-bar" id="strengthBar" role="progressbar" style="width:0%"></div>
+                        </div>
+                        <small class="text-muted" id="strengthLabel">Password strength</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.ConfirmPassword" class="form-label fw-semibold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock-fill text-muted"></i></span>
+                        <input asp-for="Input.ConfirmPassword" class="form-control" id="confirmInput" placeholder="••••••••" />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePwd('confirmInput','eyeIcon2')" tabindex="-1">
+                            <i class="bi bi-eye" id="eyeIcon2"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input asp-for="Input.AcceptTerms" class="form-check-input" type="checkbox" />
+                        <label asp-for="Input.AcceptTerms" class="form-check-label small">
+                            I agree to the <a href="#" class="text-primary">Terms &amp; Conditions</a>
+                            and <a href="#" class="text-primary">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <span asp-validation-for="Input.AcceptTerms" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary" onclick="goToStep1()">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </button>
+                    <button type="submit" class="btn btn-primary flex-grow-1 fw-semibold" id="submitBtn">
+                        <span class="spinner-border spinner-border-sm me-2 d-none" id="regSpinner"></span>
+                        Create Account
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <p class="text-center mt-4 mb-0 small">
+            Already have an account?
+            <a asp-page="/Auth/Login" class="fw-semibold text-primary">Sign in</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function goToStep2() {
+            // Basic client-side field check before moving
+            const first   = document.getElementById('Input_FirstName').value.trim();
+            const last    = document.getElementById('Input_LastName').value.trim();
+            const email   = document.getElementById('Input_Email').value.trim();
+            const phone   = document.getElementById('Input_PhoneNumber').value.trim();
+            if (!first || !last || !email || !phone) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            document.getElementById('step1').classList.add('d-none');
+            document.getElementById('step2').classList.remove('d-none');
+            const dots = document.getElementById('progressDots');
+            dots.children[0].className = 'badge bg-success rounded-pill px-3';
+            dots.children[1].className = 'badge bg-primary rounded-pill px-3';
+        }
+
+        function goToStep1() {
+            document.getElementById('step2').classList.add('d-none');
+            document.getElementById('step1').classList.remove('d-none');
+            const dots = document.getElementById('progressDots');
+            dots.children[0].className = 'badge bg-primary rounded-pill px-3';
+            dots.children[1].className = 'badge bg-light text-muted rounded-pill px-3';
+        }
+
+        function togglePwd(inputId, iconId) {
+            const inp  = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const show = inp.type === 'password';
+            inp.type   = show ? 'text' : 'password';
+            icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+        }
+
+        // Password strength meter
+        document.getElementById('passwordInput').addEventListener('input', function () {
+            const val = this.value;
+            let score = 0;
+            if (val.length >= 8)          score++;
+            if (/[A-Z]/.test(val))        score++;
+            if (/[a-z]/.test(val))        score++;
+            if (/[0-9]/.test(val))        score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+            const bar   = document.getElementById('strengthBar');
+            const label = document.getElementById('strengthLabel');
+            const map   = {0:'bg-danger',1:'bg-danger',2:'bg-warning',3:'bg-info',4:'bg-success',5:'bg-success'};
+            const text  = {0:'Too short',1:'Weak',2:'Fair',3:'Good',4:'Strong',5:'Very strong'};
+            bar.style.width    = (score * 20) + '%';
+            bar.className      = 'progress-bar ' + map[score];
+            label.textContent  = text[score];
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function () {
+            document.getElementById('regSpinner').classList.remove('d-none');
+            document.getElementById('submitBtn').disabled = true;
+        });
+    </script>
+}

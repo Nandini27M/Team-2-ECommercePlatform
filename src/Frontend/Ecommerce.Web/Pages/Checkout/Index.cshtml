@@ -1,0 +1,336 @@
+﻿@page
+@model Ecommerce.Web.Pages.Checkout.IndexModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container py-4">
+
+    <!-- ── Step Indicator ── -->
+    <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+        <div class="checkout-step active" id="stepIndicator1">
+            <span class="step-num">1</span> Delivery
+        </div>
+        <i class="bi bi-chevron-right text-muted"></i>
+        <div class="checkout-step" id="stepIndicator2">
+            <span class="step-num">2</span> Payment
+        </div>
+        <i class="bi bi-chevron-right text-muted"></i>
+        <div class="checkout-step" id="stepIndicator3">
+            <span class="step-num">3</span> Review
+        </div>
+    </div>
+
+    <form method="post" id="checkoutForm" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <div class="row g-4">
+
+            <!-- ═══ LEFT: Steps ═══ -->
+            <div class="col-lg-7">
+
+                <!-- ─── Step 1: Shipping Address ─── -->
+                <div id="checkoutStep1">
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-header fw-semibold bg-primary text-white">
+                            <i class="bi bi-geo-alt me-2"></i>Delivery Address
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Full Name</label>
+                                <input asp-for="Checkout.ShippingAddress.FullName"
+                                       class="form-control" placeholder="As on ID" />
+                                <span asp-validation-for="Checkout.ShippingAddress.FullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Address Line 1</label>
+                                <input asp-for="Checkout.ShippingAddress.AddressLine1"
+                                       class="form-control" placeholder="House no., Street name" />
+                                <span asp-validation-for="Checkout.ShippingAddress.AddressLine1" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Address Line 2 <span class="text-muted">(optional)</span></label>
+                                <input asp-for="Checkout.ShippingAddress.AddressLine2"
+                                       class="form-control" placeholder="Apartment, landmark" />
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-semibold">City</label>
+                                    <input asp-for="Checkout.ShippingAddress.City" class="form-control" placeholder="Mumbai" />
+                                    <span asp-validation-for="Checkout.ShippingAddress.City" class="text-danger small"></span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-semibold">State</label>
+                                    <select asp-for="Checkout.ShippingAddress.State" class="form-select">
+                                        <option value="">Select state</option>
+                                        @foreach (var s in Model.IndianStates)
+                                        {
+                                            <option>@s</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="Checkout.ShippingAddress.State" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-0">
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-semibold">Pincode</label>
+                                    <input asp-for="Checkout.ShippingAddress.Pincode" class="form-control"
+                                           placeholder="400001" maxlength="6" />
+                                    <span asp-validation-for="Checkout.ShippingAddress.Pincode" class="text-danger small"></span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-semibold">Phone</label>
+                                    <input asp-for="Checkout.ShippingAddress.Phone" class="form-control"
+                                           placeholder="+91 98765 43210" />
+                                    <span asp-validation-for="Checkout.ShippingAddress.Phone" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-0 bg-transparent d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary" onclick="goStep(2)">
+                                Continue to Payment <i class="bi bi-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── Step 2: Payment ─── -->
+                <div id="checkoutStep2" class="d-none">
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-header fw-semibold bg-primary text-white">
+                            <i class="bi bi-credit-card me-2"></i>Payment Method
+                        </div>
+                        <div class="card-body">
+
+                            <!-- Payment Tabs -->
+                            <ul class="nav nav-pills mb-4 gap-2" id="paymentTabs">
+                                <li class="nav-item">
+                                    <button type="button" class="nav-link active" onclick="selectPayment('card')">
+                                        <i class="bi bi-credit-card me-1"></i>Card
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button type="button" class="nav-link" onclick="selectPayment('upi')">
+                                        <i class="bi bi-phone me-1"></i>UPI
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button type="button" class="nav-link" onclick="selectPayment('cod')">
+                                        <i class="bi bi-cash-coin me-1"></i>Cash on Delivery
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <input type="hidden" asp-for="Checkout.Payment.PaymentMethod" id="paymentMethodInput" />
+
+                            <!-- Card Details -->
+                            <div id="cardSection">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Card Number</label>
+                                    <input asp-for="Checkout.Payment.CardNumber" class="form-control"
+                                           placeholder="1234 5678 9012 3456" maxlength="19"
+                                           oninput="formatCard(this)" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Cardholder Name</label>
+                                    <input asp-for="Checkout.Payment.CardHolder" class="form-control"
+                                           placeholder="JOHN DOE" style="text-transform:uppercase" />
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-4">
+                                        <label class="form-label small fw-semibold">Month</label>
+                                        <select asp-for="Checkout.Payment.ExpiryMonth" class="form-select">
+                                            <option value="">MM</option>
+                                            @for (int m = 1; m <= 12; m++)
+                                            {
+                                                <option value="@m.ToString("D2")">@m.ToString("D2")</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label small fw-semibold">Year</label>
+                                        <select asp-for="Checkout.Payment.ExpiryYear" class="form-select">
+                                            <option value="">YY</option>
+                                            @for (int y = DateTime.Now.Year; y <= DateTime.Now.Year + 10; y++)
+                                            {
+                                                <option value="@y">@y</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label small fw-semibold">CVV</label>
+                                        <input asp-for="Checkout.Payment.Cvv" class="form-control"
+                                               placeholder="•••" maxlength="4" type="password" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- UPI Section -->
+                            <div id="upiSection" class="d-none">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">UPI ID</label>
+                                    <input asp-for="Checkout.Payment.UpiId" class="form-control"
+                                           placeholder="yourname@upi" />
+                                </div>
+                                <div class="d-flex gap-3 flex-wrap">
+                                    @foreach (var upiApp in new[]{"GPay","PhonePe","Paytm","BHIM"})
+                                    {
+                                        <button type="button" class="btn btn-outline-secondary btn-sm">@upiApp</button>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- COD Section -->
+                            <div id="codSection" class="d-none">
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <strong>Cash on Delivery</strong> — Pay ₹@(Model.Checkout.Cart.Total.ToString("N0")) when your order arrives.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-0 bg-transparent d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary" onclick="goStep(1)">
+                                <i class="bi bi-arrow-left me-1"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="goStep(3)">
+                                Review Order <i class="bi bi-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── Step 3: Review & Place ─── -->
+                <div id="checkoutStep3" class="d-none">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header fw-semibold bg-success text-white">
+                            <i class="bi bi-clipboard-check me-2"></i>Review Your Order
+                        </div>
+                        <div class="card-body">
+                            <h6 class="fw-semibold">Delivering to:</h6>
+                            <p class="text-muted small mb-3" id="reviewAddress">–</p>
+
+                            <h6 class="fw-semibold">Items:</h6>
+                            @foreach (var item in Model.Checkout.Cart.Items)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="@(item.ImageUrl ?? "/images/placeholder.jpg")"
+                                             class="rounded" style="width:40px;height:40px;object-fit:cover" />
+                                        <div>
+                                            <div class="small fw-semibold">@item.ProductName</div>
+                                            <div class="text-muted" style="font-size:.75rem">Qty: @item.Quantity</div>
+                                        </div>
+                                    </div>
+                                    <span class="fw-semibold small">₹@item.TotalPrice.ToString("N0")</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="card-footer border-0 bg-transparent d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary" onclick="goStep(2)">
+                                <i class="bi bi-arrow-left me-1"></i> Back
+                            </button>
+                            <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold" id="placeOrderBtn">
+                                <span class="spinner-border spinner-border-sm me-2 d-none" id="orderSpinner"></span>
+                                <i class="bi bi-bag-check me-2"></i>Place Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ RIGHT: Summary ═══ -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm position-sticky" style="top:76px">
+                    <div class="card-header fw-semibold">
+                        <i class="bi bi-receipt me-2 text-primary"></i>Price Summary
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in Model.Checkout.Cart.Items)
+                        {
+                            <div class="d-flex justify-content-between mb-2 small text-muted">
+                                <span class="text-truncate me-2">@item.ProductName × @item.Quantity</span>
+                                <span class="text-nowrap">₹@item.TotalPrice.ToString("N0")</span>
+                            </div>
+                        }
+                        <hr />
+                        <div class="d-flex justify-content-between small text-muted mb-1">
+                            <span>Subtotal</span>
+                            <span>₹@Model.Checkout.Cart.SubTotal.ToString("N0")</span>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-1">
+                            <span>Shipping</span>
+                            <span class="@(Model.Checkout.Cart.IsFreeShipping ? "text-success" : "")">
+                                @(Model.Checkout.Cart.IsFreeShipping ? "FREE" : $"₹{Model.Checkout.Cart.ShippingCost:N0}")
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span>GST (18%)</span>
+                            <span>₹@Model.Checkout.Cart.Tax.ToString("N0")</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>Total</span>
+                            <span class="text-primary">₹@Model.Checkout.Cart.Total.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+<script>
+    let currentStep = 1;
+
+    function goStep(step) {
+        document.getElementById('checkoutStep' + currentStep).classList.add('d-none');
+        document.getElementById('checkoutStep' + step).classList.remove('d-none');
+
+        // Update step indicators
+        for (let i = 1; i <= 3; i++) {
+            const ind = document.getElementById('stepIndicator' + i);
+            ind.className = 'checkout-step' + (i < step ? ' done' : (i === step ? ' active' : ''));
+        }
+
+        // Populate review step
+        if (step === 3) {
+            const addr = [
+                document.getElementById('Checkout_ShippingAddress_FullName')?.value,
+                document.getElementById('Checkout_ShippingAddress_AddressLine1')?.value,
+                document.getElementById('Checkout_ShippingAddress_City')?.value,
+                document.getElementById('Checkout_ShippingAddress_State')?.value,
+                document.getElementById('Checkout_ShippingAddress_Pincode')?.value,
+            ].filter(Boolean).join(', ');
+            document.getElementById('reviewAddress').textContent = addr || '–';
+        }
+        currentStep = step;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectPayment(method) {
+        document.getElementById('paymentMethodInput').value = method;
+        document.getElementById('cardSection').classList.toggle('d-none', method !== 'card');
+        document.getElementById('upiSection').classList.toggle('d-none', method !== 'upi');
+        document.getElementById('codSection').classList.toggle('d-none', method !== 'cod');
+
+        document.querySelectorAll('#paymentTabs .nav-link').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    function formatCard(input) {
+        let val = input.value.replace(/\D/g, '').substring(0, 16);
+        input.value = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+    }
+
+    document.getElementById('checkoutForm').addEventListener('submit', function () {
+        document.getElementById('orderSpinner').classList.remove('d-none');
+        document.getElementById('placeOrderBtn').disabled = true;
+    });
+</script>
+}

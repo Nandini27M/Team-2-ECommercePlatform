@@ -1,0 +1,64 @@
+﻿@page
+@model Ecommerce.Web.Pages.Orders.ConfirmationModel
+@{
+    ViewData["Title"] = "Order Confirmed!";
+}
+
+<div class="container py-5">
+    <div class="card border-0 shadow-sm mx-auto text-center" style="max-width:560px">
+        <div class="card-body p-5">
+            <!-- Success Animation -->
+            <div class="mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle"
+                     style="width:100px;height:100px">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size:3rem"></i>
+                </div>
+            </div>
+
+            <h2 class="fw-bold mb-2">Order Confirmed!</h2>
+            <p class="text-muted mb-4">
+                Thank you for shopping with ShopEase. Your order has been placed and is being processed.
+            </p>
+
+            @if (Model.Order is not null)
+            {
+                <div class="bg-light rounded-3 p-3 mb-4 text-start">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="text-muted small">Order ID</div>
+                            <div class="fw-bold text-primary font-monospace">#@Model.Order.OrderId</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Total Paid</div>
+                            <div class="fw-bold text-primary">₹@Model.Order.Total.ToString("N0")</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Items</div>
+                            <div class="fw-semibold">@Model.Order.Items.Count item(s)</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Est. Delivery</div>
+                            <div class="fw-semibold">
+                                @DateTime.Now.AddDays(5).ToString("dd MMM") – @DateTime.Now.AddDays(7).ToString("dd MMM yyyy")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap justify-content-center">
+                    <a asp-page="/Orders/Detail" asp-route-id="@Model.Order.OrderId"
+                       class="btn btn-primary px-4">
+                        <i class="bi bi-eye me-2"></i>Track Order
+                    </a>
+                    <a asp-page="/Products/Index" class="btn btn-outline-secondary px-4">
+                        Continue Shopping
+                    </a>
+                </div>
+            }
+            else
+            {
+                <a asp-page="/Orders/Index" class="btn btn-primary px-4">View My Orders</a>
+            }
+        </div>
+    </div>
+</div>

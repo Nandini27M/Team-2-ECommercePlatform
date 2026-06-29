@@ -1,0 +1,8 @@
+namespace OrderService.Events;
+
+public record OrderCreatedEvent
+(
+    Guid OrderId,
+    Guid UserId,
+    decimal Amount
+);

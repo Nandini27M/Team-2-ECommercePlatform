@@ -1,41 +1,83 @@
+using ECommerce.ShippingService.Repositories;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
+using ShippingService.Consumers;
+using ShippingService.Middleware;
+using ShippingService.Services;
+using ShippingService.Validators;
+using SmartBank.ShippingService.Repositories;
+using SShippingService.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// =========================
+// Serilog Configuration
+// =========================
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(
+        "Logs/shipping-log-.txt",
+        rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+// =========================
+// Database
+// =========================
+builder.Services.AddDbContext<ShippingDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// =========================
+// Controllers
+// =========================
+builder.Services.AddControllers();
+
+// =========================
+// Swagger
+// =========================
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// =========================
+// Fluent Validation
+// =========================
+builder.Services.AddFluentValidationAutoValidation();
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateShippingRequestValidator>();
+
+// =========================
+// Dependency Injection
+// =========================
+builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
+
+builder.Services.AddScoped<IShippingService, ShippingService.Services.ShippingService>();
+
+// =========================
+// RabbitMQ Consumer
+// =========================
+builder.Services.AddHostedService<PaymentCompletedConsumer>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// =========================
+// Middleware
+// =========================
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAuthorization();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

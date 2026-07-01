@@ -4,11 +4,17 @@ namespace CartService.Interfaces;
 
 public interface ICartService
 {
-    Task<ApiResponse> AddCartItemAsync(AddCartItemRequest request);
+    Task<ApiResponse> AddCartItemAsync(
+        int userId,
+        AddCartItemRequest request);
 
     Task<List<CartResponse>> GetCartItemsAsync(int userId);
 
-    Task<ApiResponse> UpdateCartItemAsync(int cartId, UpdateCartItemRequest request);
+    Task<ApiResponse> UpdateCartItemAsync(
+        int cartId,
+        UpdateCartItemRequest request);
 
-    Task<ApiResponse> RemoveCartItemAsync(int cartId);
+    Task<ApiResponse> RemoveCartItemAsync(
+        int userId,
+        int productId);
 }

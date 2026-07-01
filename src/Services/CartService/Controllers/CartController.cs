@@ -1,11 +1,14 @@
+using System.Security.Claims;
 using CartService.DTOs;
 using CartService.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
@@ -15,30 +18,51 @@ public class CartController : ControllerBase
         _cartService = cartService;
     }
 
-    // Add Item To Cart
     [HttpPost("add")]
     public async Task<IActionResult> AddToCart(AddCartItemRequest request)
     {
-        var response = await _cartService.AddCartItemAsync(request);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            return Unauthorized(new ApiResponse
+            {
+                Success = false,
+                Message = "Invalid user."
+            });
+        }
+
+        int userId = int.Parse(userIdClaim);
+
+        var response = await _cartService.AddCartItemAsync(userId, request);
 
         if (!response.Success)
-        {
             return BadRequest(response);
-        }
 
         return Ok(response);
     }
 
-    // Get User Cart
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> GetCart(int userId)
+    [HttpGet]
+    public async Task<IActionResult> GetCart()
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            return Unauthorized(new ApiResponse
+            {
+                Success = false,
+                Message = "Invalid user."
+            });
+        }
+
+        int userId = int.Parse(userIdClaim);
+
         var cart = await _cartService.GetCartItemsAsync(userId);
 
         return Ok(cart);
     }
 
-    // Update Quantity
     [HttpPut("{cartId}")]
     public async Task<IActionResult> UpdateCart(
         int cartId,
@@ -47,23 +71,31 @@ public class CartController : ControllerBase
         var response = await _cartService.UpdateCartItemAsync(cartId, request);
 
         if (!response.Success)
-        {
             return NotFound(response);
-        }
 
         return Ok(response);
     }
 
-    // Remove Item
-    [HttpDelete("{cartId}")]
-    public async Task<IActionResult> RemoveCartItem(int cartId)
+    [HttpDelete("{productId}")]
+    public async Task<IActionResult> RemoveCartItem(int productId)
     {
-        var response = await _cartService.RemoveCartItemAsync(cartId);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            return Unauthorized(new ApiResponse
+            {
+                Success = false,
+                Message = "Invalid user."
+            });
+        }
+
+        int userId = int.Parse(userIdClaim);
+
+        var response = await _cartService.RemoveCartItemAsync(userId, productId);
 
         if (!response.Success)
-        {
             return NotFound(response);
-        }
 
         return Ok(response);
     }

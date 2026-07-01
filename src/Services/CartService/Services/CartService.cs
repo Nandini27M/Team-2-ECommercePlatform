@@ -13,17 +13,38 @@ public class CartService : ICartService
         _repository = repository;
     }
 
-    public async Task<ApiResponse> AddCartItemAsync(AddCartItemRequest request)
+    public async Task<ApiResponse> AddCartItemAsync(
+        int userId,
+        AddCartItemRequest request)
     {
+        if (request.Quantity > 10)
+        {
+            return new ApiResponse
+            {
+                Success = false,
+                Message = "Maximum quantity allowed is 10."
+            };
+        }
+
         var existingItem = await _repository.GetCartItemAsync(
-            request.UserId,
+            userId,
             request.ProductId);
 
         if (existingItem != null)
         {
+            if (existingItem.Quantity + request.Quantity > 10)
+            {
+                return new ApiResponse
+                {
+                    Success = false,
+                    Message = "Maximum quantity allowed is 10."
+                };
+            }
+
             existingItem.Quantity += request.Quantity;
 
             _repository.UpdateCartItem(existingItem);
+
             await _repository.SaveChangesAsync();
 
             return new ApiResponse
@@ -35,12 +56,13 @@ public class CartService : ICartService
 
         var cartItem = new CartItem
         {
-            UserId = request.UserId,
+            UserId = userId,
             ProductId = request.ProductId,
             Quantity = request.Quantity
         };
 
         await _repository.AddCartItemAsync(cartItem);
+
         await _repository.SaveChangesAsync();
 
         return new ApiResponse
@@ -82,6 +104,7 @@ public class CartService : ICartService
         cartItem.Quantity = request.Quantity;
 
         _repository.UpdateCartItem(cartItem);
+
         await _repository.SaveChangesAsync();
 
         return new ApiResponse
@@ -91,26 +114,31 @@ public class CartService : ICartService
         };
     }
 
-    public async Task<ApiResponse> RemoveCartItemAsync(int cartId)
+    public async Task<ApiResponse> RemoveCartItemAsync(
+        int userId,
+        int productId)
     {
-        var cartItem = await _repository.GetByIdAsync(cartId);
+        var cartItem = await _repository.GetCartItemAsync(
+            userId,
+            productId);
 
         if (cartItem == null)
         {
             return new ApiResponse
             {
                 Success = false,
-                Message = "Cart item not found."
+                Message = "Product not found in cart."
             };
         }
 
         _repository.RemoveCartItem(cartItem);
+
         await _repository.SaveChangesAsync();
 
         return new ApiResponse
         {
             Success = true,
-            Message = "Cart item removed successfully."
+            Message = "Product removed from cart successfully."
         };
     }
 }

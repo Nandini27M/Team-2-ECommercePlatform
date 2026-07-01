@@ -4,13 +4,10 @@ namespace CartService.DTOs;
 
 public class AddCartItemRequest
 {
-    [Required]
-    public int UserId { get; set; }
-
-    [Required]
+    [Required(ErrorMessage = "Product Id is required.")]
     public int ProductId { get; set; }
 
-    [Required]
-    [Range(1, int.MaxValue)]
+    [Required(ErrorMessage = "Quantity is required.")]
+    [Range(1, 10, ErrorMessage = "Quantity must be between 1 and 10.")]
     public int Quantity { get; set; }
 }

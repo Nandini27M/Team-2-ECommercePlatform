@@ -26,11 +26,9 @@ namespace Ecommerce.Web.HttpClients
             {
                 var res = await _http.PostAsync("/api/auth/register", Json(new
                 {
-                    vm.FirstName,
-                    vm.LastName,
+                    vm.FullName,
                     vm.Email,
                     vm.Password,
-                    vm.PhoneNumber
                 }));
                 if (!res.IsSuccessStatusCode)
                 {

@@ -34,6 +34,6 @@ app.UseRouting();
 app.UseSession();
 app.MapRazorPages();
 
-app.MapGet("/", () => Results.Redirect("/Products/Index"));
+app.MapGet("/", () => Results.Redirect("/Auth/Login"));
 
 app.Run();

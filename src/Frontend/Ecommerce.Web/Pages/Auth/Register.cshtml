@@ -9,7 +9,7 @@
     <div class="auth-card card mx-auto" style="max-width:560px">
         <div class="text-center mb-1">
             <div class="auth-brand-icon">
-                <i class="bi bi-person-plus-fill"></i>
+                🛒
             </div>
             <h3 class="fw-bold mb-0">Create your account</h3>
             <p class="text-muted small">Join thousands of happy shoppers</p>
@@ -26,41 +26,22 @@
 
             <!-- Step 1: Personal Details -->
             <div id="step1">
-                <div class="row g-3 mb-3">
-                    <div class="col-sm-6">
-                        <label asp-for="Input.FirstName" class="form-label fw-semibold small"></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
-                            <input asp-for="Input.FirstName" class="form-control" placeholder="John" />
-                        </div>
-                        <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+                <div class="mb-3">
+                    <label asp-for="Input.FullName" class="form-label fw-semibold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">🙍‍</span>
+                        <input asp-for="Input.FullName" class="form-control" placeholder="Enter full name" />
                     </div>
-                    <div class="col-sm-6">
-                        <label asp-for="Input.LastName" class="form-label fw-semibold small"></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
-                            <input asp-for="Input.LastName" class="form-control" placeholder="Doe" />
-                        </div>
-                        <span asp-validation-for="Input.LastName" class="text-danger small"></span>
-                    </div>
+                    <span asp-validation-for="Input.FullName" class="text-danger small"></span>
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="Input.Email" class="form-label fw-semibold small"></label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-envelope text-muted"></i></span>
+                        <span class="input-group-text">📧</span>
                         <input asp-for="Input.Email" class="form-control" placeholder="you@example.com" />
                     </div>
                     <span asp-validation-for="Input.Email" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="Input.PhoneNumber" class="form-label fw-semibold small"></label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-phone text-muted"></i></span>
-                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="+91 98765 43210" />
-                    </div>
-                    <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
                 </div>
 
                 <div class="d-grid">
@@ -75,10 +56,10 @@
                 <div class="mb-3">
                     <label asp-for="Input.Password" class="form-label fw-semibold small"></label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
+                        <span class="input-group-text">🔐</span>
                         <input asp-for="Input.Password" class="form-control" id="passwordInput" placeholder="••••••••" />
                         <button type="button" class="btn btn-outline-secondary" onclick="togglePwd('passwordInput','eyeIcon1')" tabindex="-1">
-                            <i class="bi bi-eye" id="eyeIcon1"></i>
+                            <span id="eyeIcon1">👁️</span>
                         </button>
                     </div>
                     <span asp-validation-for="Input.Password" class="text-danger small"></span>
@@ -95,10 +76,10 @@
                 <div class="mb-3">
                     <label asp-for="Input.ConfirmPassword" class="form-label fw-semibold small"></label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock-fill text-muted"></i></span>
+                        <span class="input-group-text">🔐</span>
                         <input asp-for="Input.ConfirmPassword" class="form-control" id="confirmInput" placeholder="••••••••" />
                         <button type="button" class="btn btn-outline-secondary" onclick="togglePwd('confirmInput','eyeIcon2')" tabindex="-1">
-                            <i class="bi bi-eye" id="eyeIcon2"></i>
+                            <span id="eyeIcon2">👁️</span>
                         </button>
                     </div>
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
@@ -139,11 +120,9 @@
     <script>
         function goToStep2() {
             // Basic client-side field check before moving
-            const first   = document.getElementById('Input_FirstName').value.trim();
-            const last    = document.getElementById('Input_LastName').value.trim();
+            const full   = document.getElementById('Input_FullName').value.trim();
             const email   = document.getElementById('Input_Email').value.trim();
-            const phone   = document.getElementById('Input_PhoneNumber').value.trim();
-            if (!first || !last || !email || !phone) {
+            if (!full || !email) {
                 alert('Please fill in all required fields.');
                 return;
             }

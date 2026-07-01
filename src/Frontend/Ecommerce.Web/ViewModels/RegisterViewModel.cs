@@ -4,15 +4,10 @@ namespace Ecommerce.Web.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "First name is required")]
+        [Required(ErrorMessage = "Full name is required")]
         [StringLength(50)]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(50)]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; } = string.Empty;
+        [Display(Name = "Full Name")]
+        public string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
@@ -31,11 +26,6 @@ namespace Ecommerce.Web.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Phone number is required")]
-        [Phone(ErrorMessage = "Invalid phone number")]
-        [Display(Name = "Phone Number")]
-        public string PhoneNumber { get; set; } = string.Empty;
 
         [MustBeTrue(ErrorMessage = "You must accept the terms and conditions")]
         [Display(Name = "I agree to the Terms & Conditions")]

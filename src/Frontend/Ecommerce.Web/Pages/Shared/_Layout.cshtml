@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Ecommerce.Web</title>
+    <title>🛒@ViewData["Title"] - Ecommerce.Web</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -15,7 +15,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold fs-4" asp-page="/Index">
-                <i class="bi bi-bag-heart-fill me-1"></i>ShopEase
+                <i class="bi bi-bag-heart-fill me-1"></i>🛒ShopEase
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
                 <span class="navbar-toggler-icon"></span>
@@ -29,7 +29,7 @@
                                placeholder="Search products..."
                                value="@Context.Request.Query["search"]" />
                         <button class="btn btn-warning" type="submit">
-                            <i class="bi bi-search"></i>
+                            🔍
                         </button>
                     </div>
                 </form>
@@ -81,13 +81,8 @@
                     else
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-page="/Auth/Login">
-                                <i class="bi bi-person me-1"></i>Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-warning btn-sm ms-1 px-3" asp-page="/Auth/Register">
-                                Sign Up
+                            <a class="btn btn-warning btn-sm ms-1 px-3" asp-page="/Auth/Login">
+                                Login
                             </a>
                         </li>
                     }
@@ -123,45 +118,8 @@
 
     <!-- ========== FOOTER ========== -->
     <footer class="bg-dark text-white pt-5 pb-3 mt-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h5 class="fw-bold"><i class="bi bi-bag-heart-fill me-2 text-warning"></i>ShopEase</h5>
-                    <p class="text-muted small">Your one-stop destination for quality products at unbeatable prices.</p>
-                </div>
-                <div class="col-md-2">
-                    <h6 class="fw-semibold">Shop</h6>
-                    <ul class="list-unstyled small text-muted">
-                        <li><a class="text-muted text-decoration-none" asp-page="/Products/Index">All Products</a></li>
-                        <li><a class="text-muted text-decoration-none" href="#">New Arrivals</a></li>
-                        <li><a class="text-muted text-decoration-none" href="#">Best Sellers</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-2">
-                    <h6 class="fw-semibold">Support</h6>
-                    <ul class="list-unstyled small text-muted">
-                        <li><a class="text-muted text-decoration-none" href="#">Help Center</a></li>
-                        <li><a class="text-muted text-decoration-none" href="#">Return Policy</a></li>
-                        <li><a class="text-muted text-decoration-none" href="#">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h6 class="fw-semibold">Newsletter</h6>
-                    <div class="input-group">
-                        <input type="email" class="form-control form-control-sm" placeholder="your@email.com" />
-                        <button class="btn btn-warning btn-sm">Subscribe</button>
-                    </div>
-                </div>
-            </div>
-            <hr class="border-secondary mt-4" />
-            <div class="d-flex justify-content-between align-items-center small text-muted">
-                <span>&copy; @DateTime.Now.Year ShopEase. All rights reserved.</span>
-                <div class="d-flex gap-3">
-                    <i class="bi bi-facebook fs-5"></i>
-                    <i class="bi bi-twitter-x fs-5"></i>
-                    <i class="bi bi-instagram fs-5"></i>
-                </div>
-            </div>
+        <div class="container text-center">
+            <span>&copy; @DateTime.Now.Year ShopEase. All rights reserved.</span>
         </div>
     </footer>
 

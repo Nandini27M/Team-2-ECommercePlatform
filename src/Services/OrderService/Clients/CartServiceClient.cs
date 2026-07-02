@@ -7,14 +7,15 @@ public class CartServiceClient
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
 
-    public CartServiceClient(HttpClient httpClient,
-                             IConfiguration configuration)
+    public CartServiceClient(
+        HttpClient httpClient,
+        IConfiguration configuration)
     {
         _httpClient = httpClient;
         _configuration = configuration;
     }
 
-    public async Task<List<CartResponse>?> GetCartItemsAsync(Guid userId)
+    public async Task<List<CartResponse>?> GetCartItemsAsync(int userId)
     {
         var baseUrl = _configuration["ServiceUrls:CartService"];
 

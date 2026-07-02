@@ -15,7 +15,6 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 
-    // POST: api/order
     [HttpPost]
     public async Task<IActionResult> PlaceOrder(CreateOrderRequest request)
     {
@@ -27,23 +26,23 @@ public class OrderController : ControllerBase
         return Ok(result);
     }
 
-    // GET: api/order/{orderId}
     [HttpGet("{orderId}")]
-    public async Task<IActionResult> GetOrder(Guid orderId)
+    public async Task<IActionResult> GetOrder(int orderId)
     {
         var order = await _orderService.GetOrderAsync(orderId);
 
         if (order == null)
+        {
             return NotFound(new
             {
                 Success = false,
                 Message = "Order not found."
             });
+        }
 
         return Ok(order);
     }
 
-    // GET: api/order/user/{userId}
     [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetOrderHistory(int userId)
     {

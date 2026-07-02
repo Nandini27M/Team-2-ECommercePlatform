@@ -9,7 +9,7 @@ public class OrderItem
     public int OrderItemId { get; set; }
 
     [Required]
-    public Guid OrderId { get; set; }
+    public int OrderId { get; set; }
 
     [ForeignKey(nameof(OrderId))]
     public Order Order { get; set; } = null!;

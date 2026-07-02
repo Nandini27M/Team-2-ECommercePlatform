@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderService.Entities;
 
 public class Order
 {
     [Key]
-    public Guid OrderId { get; set; } = Guid.NewGuid();
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int OrderId { get; set; }
 
     [Required]
     public int UserId { get; set; }

@@ -1,8 +1,6 @@
 using System.Net.Http.Json;
-using MassTransit;
 using OrderService.DTOs;
 using OrderService.Entities;
-using OrderService.Events;
 using OrderService.Interfaces;
 
 namespace OrderService.Services;
@@ -12,24 +10,23 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _repository;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IOrderPublisher _orderPublisher;
 
     public OrderService(
         IOrderRepository repository,
         HttpClient httpClient,
         IConfiguration configuration,
-        IPublishEndpoint publishEndpoint)
+        IOrderPublisher orderPublisher)
     {
         _repository = repository;
         _httpClient = httpClient;
         _configuration = configuration;
-        _publishEndpoint = publishEndpoint;
+        _orderPublisher = orderPublisher;
     }
 
     public async Task<ApiResponse> CreateOrderAsync(CreateOrderRequest request)
     {
         var cartUrl = _configuration["ServiceUrls:CartService"];
-
         var productUrl = _configuration["ServiceUrls:ProductService"];
 
         Console.WriteLine($"Cart URL: {cartUrl}/api/cart/{request.UserId}");
@@ -60,6 +57,7 @@ public class OrderService : IOrderService
         foreach (var item in cartItems)
         {
             Console.WriteLine($"Product URL: {productUrl}/api/Product/{item.ProductId}");
+
             var product = await _httpClient.GetFromJsonAsync<ProductResponse>
             (
                 $"{productUrl}/api/Product/{item.ProductId}"
@@ -87,19 +85,10 @@ public class OrderService : IOrderService
         order.TotalAmount = totalAmount;
 
         await _repository.AddOrderAsync(order);
-
         await _repository.SaveChangesAsync();
-                // TODO:
-        // Replace this with the actual User Guid once the team finalizes
-        // the shared UserId contract across services.
-        Guid eventUserId = Guid.Empty;
 
-        await _publishEndpoint.Publish(
-            new OrderCreatedEvent(
-                order.OrderId,
-                eventUserId,
-                order.TotalAmount
-            ));
+        // Publish OrderCreated event
+        await _orderPublisher.PublishOrderCreatedAsync(order);
 
         return new ApiResponse
         {
@@ -108,7 +97,7 @@ public class OrderService : IOrderService
         };
     }
 
-    public async Task<OrderResponse?> GetOrderAsync(Guid orderId)
+    public async Task<OrderResponse?> GetOrderAsync(int orderId)
     {
         var order = await _repository.GetOrderByIdAsync(orderId);
 

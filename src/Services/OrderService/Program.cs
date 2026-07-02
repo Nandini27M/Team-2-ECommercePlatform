@@ -5,6 +5,7 @@ using OrderService.Data;
 using OrderService.Interfaces;
 using OrderService.Repositories;
 using OrderService.Services;
+using OrderService.Publishers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,7 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService.Services.OrderService>();
-
+builder.Services.AddScoped<IOrderPublisher, OrderPublisher>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddMassTransit(x =>
@@ -40,11 +41,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 

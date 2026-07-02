@@ -2,6 +2,6 @@ namespace OrderService.Events;
 
 public record PaymentCompletedEvent
 (
-    Guid OrderId,
+    int OrderId,
     bool Success
 );

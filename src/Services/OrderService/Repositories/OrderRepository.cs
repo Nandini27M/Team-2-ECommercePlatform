@@ -19,7 +19,7 @@ public class OrderRepository : IOrderRepository
         await _context.Orders.AddAsync(order);
     }
 
-    public async Task<Order?> GetOrderByIdAsync(Guid orderId)
+    public async Task<Order?> GetOrderByIdAsync(int orderId)
     {
         return await _context.Orders
             .Include(o => o.OrderItems)

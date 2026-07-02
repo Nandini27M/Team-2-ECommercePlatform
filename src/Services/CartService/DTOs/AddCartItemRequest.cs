@@ -4,6 +4,9 @@ namespace CartService.DTOs;
 
 public class AddCartItemRequest
 {
+    [Required(ErrorMessage = "User Id is required.")]
+    public int UserId { get; set; }
+
     [Required(ErrorMessage = "Product Id is required.")]
     public int ProductId { get; set; }
 

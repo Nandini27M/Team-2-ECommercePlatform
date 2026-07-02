@@ -1,14 +1,11 @@
-using System.Security.Claims;
 using CartService.DTOs;
 using CartService.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
@@ -19,45 +16,21 @@ public class CartController : ControllerBase
     }
 
     [HttpPost("add")]
-    public async Task<IActionResult> AddToCart(AddCartItemRequest request)
+public async Task<IActionResult> AddToCart(AddCartItemRequest request)
+{
+    var response = await _cartService.AddCartItemAsync(
+        request.UserId,
+        request);
+
+    if (!response.Success)
+        return BadRequest(response);
+
+    return Ok(response);
+}
+
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetCart(int userId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userIdClaim))
-        {
-            return Unauthorized(new ApiResponse
-            {
-                Success = false,
-                Message = "Invalid user."
-            });
-        }
-
-        int userId = int.Parse(userIdClaim);
-
-        var response = await _cartService.AddCartItemAsync(userId, request);
-
-        if (!response.Success)
-            return BadRequest(response);
-
-        return Ok(response);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetCart()
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userIdClaim))
-        {
-            return Unauthorized(new ApiResponse
-            {
-                Success = false,
-                Message = "Invalid user."
-            });
-        }
-
-        int userId = int.Parse(userIdClaim);
-
         var cart = await _cartService.GetCartItemsAsync(userId);
 
         return Ok(cart);
@@ -76,22 +49,11 @@ public class CartController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete("{productId}")]
-    public async Task<IActionResult> RemoveCartItem(int productId)
+    [HttpDelete("{userId}/{productId}")]
+    public async Task<IActionResult> RemoveCartItem(
+        int userId,
+        int productId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userIdClaim))
-        {
-            return Unauthorized(new ApiResponse
-            {
-                Success = false,
-                Message = "Invalid user."
-            });
-        }
-
-        int userId = int.Parse(userIdClaim);
-
         var response = await _cartService.RemoveCartItemAsync(userId, productId);
 
         if (!response.Success)
